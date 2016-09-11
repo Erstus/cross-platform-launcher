@@ -45,7 +45,13 @@ IF %PROCESSOR_ARCHITECTURE% == x86 (
 ECHO Detected system: Windows %ARCH%-bit
 
 :: "App" should be replaced with a path of the application.
-START App
+App >nul 2>&1 && (
+    ECHO Starting App.
+    START App
+    ECHO App has closed.
+) || (
+    ECHO App not found.
+)
 
 :: Exit so the script will not continue into the Linux code.
 EXIT
