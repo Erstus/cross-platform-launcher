@@ -45,13 +45,16 @@ IF %PROCESSOR_ARCHITECTURE% == x86 (
 ECHO Detected system: Windows %ARCH%-bit
 
 :: "App" should be replaced with a path of the application.
-App >nul 2>&1 && (
+WHERE /q App >NUL 2>&1 && (
     ECHO Starting App.
-    START App
+    START /WAIT App
     ECHO App has closed.
 ) || (
     ECHO App not found.
 )
+
+:: Prevent command prompt from closing.
+CMD /k
 
 :: Exit so the script will not continue into the Linux code.
 EXIT
