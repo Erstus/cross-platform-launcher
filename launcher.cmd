@@ -3,7 +3,7 @@
 
 #### BASH SCRIPT STARTS HERE ####
 
-# Check for OS name, but can't trust uname -a for arch.
+# Check OS name, but can't trust uname -a as architecture.
 OS=`uname`
 
 # Detect architecture by abusing an integer overflow.
@@ -16,13 +16,19 @@ fi
 # $OS contains OS name, and $ARCH architecture.
 echo -e "Detected system: $OS $ARCH-bit"
 
-# "App" should be replaced with a path of the application.
-if [ ! -x "$(command -v App)" ]; then
-  echo "App not found."
+# Get OS specific instructions from external configuration file.
+DIR="${BASH_SOURCE%/*}"
+if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
+source <(grep = "$DIR/path.ini" | sed 's/ *= */=/g')
+echo -e "Command: ${!OS}"
+
+# Execute specified application.
+if [ ! -x "$(command -v ${!OS})" ]; then
+  echo "$App not found."
 else
-  echo -e "Starting App.\n"
-  App
-  echo -e "\nApp has closed.\n"
+  echo -e "Starting $App.\n"
+  ${!OS}
+  echo -e "\n$App has closed.\n"
 fi
 
 # Prevent terminal from closing.
