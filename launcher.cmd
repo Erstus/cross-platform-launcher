@@ -3,27 +3,21 @@
 
 # Check OS name and unless it's Darwin assume it to be Linux.
 if [ `uname` == "Darwin" ]; then OS="macOS"; else OS="Linux"; fi
-
 # Detect architecture by abusing an integer overflow.
 if ((1<<32)); then ARCH=64; else ARCH=32; fi
-
 echo -e "Detected system: $OS $ARCH-bit"
 
-# Get OS specific instructions from external file.
+# Get parent folder location.
 DIR="${BASH_SOURCE%/*}"
 if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
-source <(grep = "$DIR/config.ini" | sed 's/ *= */=/g')
-
-echo -e "Command: ${!OS}"
+# Parse the configuration file.
+source <(grep = <(sed '/\[Launcher\]/,/^\s*$/!d; s/\;.*$//; s/:/=/g; s/ *\= */=/g' $DIR/config.ini))
+echo -e "Command: '${!OS}'"
 
 # Execute specified application.
-if [ ! -x "$(command -v ${!OS})" ]; then
-  echo "Could not execute."
-else
-  echo -e "Executing..\n"
-  eval ${!OS}
-  echo -e "\nScript finished.\n"
-fi
+echo -e "Executing..\n"
+eval ${!OS}
+echo -e "\nScript finished.\n"
 
 # Prevent terminal from closing and quit before Windows code.
 exec $SHELL; exit
