@@ -1,44 +1,34 @@
 #!/bin/bash
 #%0 & @ECHO OFF & CLS & GOTO :windows
 
-#### BASH SCRIPT STARTS HERE ####
-
-# Check OS name, but can't trust uname -a as architecture.
-OS=`uname`
+# Check OS name and unless it's Darwin assume it to be Linux.
+if [ `uname` == "Darwin" ]; then OS="macOS"; else OS="Linux"; fi
 
 # Detect architecture by abusing an integer overflow.
-if ((1<<32)); then
-    ARCH=64 # 64-bit architecture
-else
-    ARCH=32 # 32-bit architecture
-fi
+if ((1<<32)); then ARCH=64; else ARCH=32; fi
 
-# $OS contains OS name, and $ARCH architecture.
 echo -e "Detected system: $OS $ARCH-bit"
 
-# Get OS specific instructions from external configuration file.
+# Get OS specific instructions from external file.
 DIR="${BASH_SOURCE%/*}"
 if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
-source <(grep = "$DIR/path.ini" | sed 's/ *= */=/g')
+source <(grep = "$DIR/config.ini" | sed 's/ *= */=/g')
+
 echo -e "Command: ${!OS}"
 
 # Execute specified application.
 if [ ! -x "$(command -v ${!OS})" ]; then
-  echo "$App not found."
+  echo "Could not execute."
 else
-  echo -e "Starting $App.\n"
-  ${!OS}
-  echo -e "\n$App has closed.\n"
+  echo -e "Executing..\n"
+  eval ${!OS}
+  echo -e "\nScript finished.\n"
 fi
 
-# Prevent terminal from closing.
-exec $SHELL
-
-# Exit before we run into the Windows code.
-exit
+# Prevent terminal from closing and quit before Windows code.
+exec $SHELL; exit
 
 :windows
-::#### WINDOWS SCRIPT STARTS HERE ####
 
 :: Determine the architecture by checking Windows' env vars.
 IF %PROCESSOR_ARCHITECTURE% == x86 (
