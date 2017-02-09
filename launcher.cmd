@@ -9,9 +9,9 @@ echo -e "Detected system: $OS $ARCH-bit"
 
 # Get parent folder location.
 DIR="${BASH_SOURCE%/*}"
-if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
+if [ ! -d "$DIR" ]; then DIR="$PWD"; fi
 # Parse the configuration file.
-source <(grep = <(sed -E '/\[Launcher\]/,/^\s*$/!d; s/\;.*$//; s/:/=/g; s/ *\= */=/g' $DIR/config.ini))
+eval $(sed -E '/\[Launcher\]/,/^\s*$/!d; s/\[Launcher\]//g; s/\;.*$//g; s/:/=/g; s/ *\= */=/g' $DIR/config.ini)
 echo -e "Command: '${!OS}'"
 
 # Execute specified application.
