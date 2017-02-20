@@ -11,7 +11,7 @@ echo -e "Detected system: $OS $ARCH-bit"
 DIR="${BASH_SOURCE%/*}"
 if [ ! -d "$DIR" ]; then DIR="$PWD"; fi
 # Parse the configuration file.
-eval $(sed -E '/\[Launcher\]/,/^\s*$/!d; s/\[Launcher\]//g; s/\;.*$//g; s/:/=/g; s/ *\= */=/g' $DIR/config.ini)
+eval $(sed '/\[Launcher\]/,/^$/!d; s/\[Launcher\]//g; s/\;.*$//g; s/:/=/g; s/ *\= */=/g' $DIR/config.ini)
 echo -e "Command: '${!OS}'"
 
 # Execute specified application.
